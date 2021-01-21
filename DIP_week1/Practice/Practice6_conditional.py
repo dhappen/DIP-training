@@ -1,4 +1,7 @@
 ''' 6-1 if '''
+x = range(5)
+print(x)
+import numpy as np
 # weather = input("오늘 날씨는 어때요? ")
 # if weather == "비":
 #     print("우산을 챙기세요")
