@@ -20,7 +20,14 @@ class intensityTF:
     def logtransform(self):
 
         c = 1
-        imgtf = c * np.log10(1+self.img).astype(np.uint8)
+        
+        # imgtf = (c * 255 * np.log10(1+self.img/255)).astype(np.uint8)
+        # imgtf = (c * 255 * np.log10(1+self.img)).astype(np.uint8)
+        imgtf = c * np.log10(1+self.img.astype(np.float64))
+        print(np.max(imgtf))
+        print(np.min(imgtf))
+        imgtf = 255 * ((imgtf) / (np.max(imgtf)-np.min(imgtf)))
+        imgtf = imgtf.astype(np.uint8)
         cv2.imshow('logtransform',imgtf)
         cv2.imshow('logtransform_original',self.img)
         cv2.imwrite(self.output+'IntensityTF_logtransform.tif',imgtf)
