@@ -52,17 +52,24 @@ class intensityTF:
         cv2.imwrite(self.output+'[{0}]IntensityTF_gammatransform_original.tif'.format(self.imgname),self.img)
         print("gammatransform complete")
 
-    def contrast(self):
-        imgtf = []
-        intmax = np.max(self.img)
-        intmin = np.min(self.img)
-        for y in range(self.height):
-            for x in range(self.width):
-                k = self.img[y,x]
-                s = 255 * k / (intmax - intmin) - 255 * intmin/ (intmax - intmin)
-                imgtf.append(s)
-        imgtf = np.array(imgtf)
-        imgtf = imgtf.reshape(self.height,self.width)
+    def contrast(self,r1,r2):
+        a = 0
+        b = 255
+        img = self.img
+        img_mask1 = (img <= r2).astype(np.float64)
+        img_mask2 = (img >= r1).astype(np.float64)
+        img_mask = img_mask1 * img_mask2
+        not_img_mask1 = 1 - img_mask1   # img > r2
+        not_img_mask2 = 1 - img_mask2   # img < r1
+        
+        img_range = img_mask * img
+        not_img_range1 = not_img_mask1 * img
+        not_img_range2 = not_img_mask2 * img
+        img_range = (img_range - r2) * (b - a) / (r2 - r1) + b
+        not_img_range1 = (img_range - 255) * (255 - b) / (255 - r2) + 255
+        not_img_range2 = a * not_img_range2 / r1
+        imgtf = img_range + not_img_mask1 + not_img_mask2
+
         imgtf = imgtf.astype(np.uint8)
         cv2.imshow('contrast',imgtf)
         cv2.imshow('contrast_original',self.img)
@@ -71,19 +78,11 @@ class intensityTF:
         print("contrast complete")
 
     def thresholding(self):
-        imgtf = []
-        mean = np.mean(self.img)
-        for y in range(self.height):
-            for x in range(self.width):
-                k = self.img[y,x]
-                if k >= mean:
-                    s = 255
-                else:
-                    s = 0
-                imgtf.append(s)
-        imgtf = np.array(imgtf)
-        imgtf = imgtf.reshape(self.height,self.width)
-        imgtf = imgtf.astype(np.uint8)
+        img = self.img
+        median = np.median(self.img)
+        mean_mask = (img >= median).astype(np.uint8)
+        
+        imgtf = 255 * mean_mask
         cv2.imshow('thresholding',imgtf)
         cv2.imshow('thresholding_original',self.img)
         cv2.imwrite(self.output+'[{0}]IntensityTF_thresholding.tif'.format(self.imgname),imgtf)
@@ -91,35 +90,20 @@ class intensityTF:
         print("thresholding complete")
 
     def slicing(self):
-        imgtf = []
-        imgtf2 = []
-        for y in range(self.height):
-            for x in range(self.width):
-                k = self.img[y,x]
-                if 150<= k <= 230:
-                    s = 230
-                else:
-                    s = 10
-                imgtf.append(s)
-        for y in range(self.height):
-            for x in range(self.width):
-                k = self.img[y,x]
-                if 70<= k <= 140:
-                    s = 0
-                else:
-                    s = k
-                imgtf2.append(s)
-        imgtf = np.array(imgtf)
-        imgtf = imgtf.reshape(self.height,self.width)
-        imgtf = imgtf.astype(np.uint8)
-        imgtf2 = np.array(imgtf2)
-        imgtf2 = imgtf2.reshape(self.height,self.width)
-        imgtf2 = imgtf2.astype(np.uint8)
-        cv2.imshow('slicing',imgtf)
-        cv2.imshow('slicing2',imgtf2)
+        img = self.img
+        img_mask_a_1 = (img <= 230).astype(np.uint8) * (img >= 150).astype(np.uint8)
+        img_mask_a_2 = 1 - img_mask_a_1
+        img_a = 230 * img_mask_a_1 + 10 * img_mask_a_2
+
+        img_mask_b_1 = (img <= 140).astype(np.uint8) * (img >= 70).astype(np.uint8)
+        img_mask_b_2 = 1 - img_mask_b_1
+        img_b = 0 * img_mask_b_1 + img * img_mask_b_2
+
+        cv2.imshow('slicing',img_a)
+        cv2.imshow('slicing2',img_b)
         cv2.imshow('slicing_original',self.img)
-        cv2.imwrite(self.output+'[{0}]IntensityTF_slicing_a.tif'.format(self.imgname),imgtf)
-        cv2.imwrite(self.output+'[{0}]IntensityTF_slicing_b.tif'.format(self.imgname),imgtf2)
+        cv2.imwrite(self.output+'[{0}]IntensityTF_slicing_a.tif'.format(self.imgname),img_a)
+        cv2.imwrite(self.output+'[{0}]IntensityTF_slicing_b.tif'.format(self.imgname),img_b)
         cv2.imwrite(self.output+'[{0}]IntensityTF_slicing_original.tif'.format(self.imgname),self.img)
         print("slicing complete")
 
@@ -128,7 +112,7 @@ class intensityTF:
         for x in range(8):
             imgtf[x] = self.img & 2**x
             cv2.imshow('bitplane[{0}]'.format(x),imgtf[x])
-            cv2.imwrite(self.output+'[{0}]IntensityTF_bitplane[{1}].jpg'.format(self.imgname,x),imgtf[x])
+            cv2.imwrite(self.output+'[{0}]IntensityTF_bitplane[{1}].png'.format(self.imgname,x),imgtf[x])
 
         cv2.imshow('bitplane_original',self.img)
         cv2.imwrite(self.output+'[{0}]IntensityTF_bitplane_original.tif'.format(self.imgname),self.img)

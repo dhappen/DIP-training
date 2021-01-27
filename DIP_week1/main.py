@@ -21,7 +21,7 @@ contrast = "Fig0310(b)(washed_out_pollen_image).tif"
 kidney = "Fig0312(a)(kidney).tif"
 dollor = "Fig0314(a)(100-dollars).tif"
 T = "Fig0236(a)(letter_T).tif"
-watch = "Fig0220(a)(chronometer 3692x2812  2pt25 inch 1250 dpi).tif"
+watch = "Fig0220(a)(chronometer 3692x2812 2pt25 inch 1250 dpi).tif"
 color = "Fig0608(RGB-full-color-cube).tif"
 # breast_img = cv2.imread(folder+breast,cv2.IMREAD_GRAYSCALE)
 fourier_img = cv2.imread(folder+fourier,cv2.IMREAD_GRAYSCALE)
@@ -43,15 +43,23 @@ color_img = cv2.imread(folder+color,cv2.IMREAD_COLOR)
 # intensityTF(Aerial_img,output,"Aerial").gammatransform(3)
 # intensityTF(Aerial_img,output,"Aerial").gammatransform(4)
 # intensityTF(Aerial_img,output,"Aerial").gammatransform(5)
-# intensityTF(contrast_img,output,"contrast").contrast()
+# intensityTF(contrast_img,output,"contrast").contrast(80,160)
 # intensityTF(contrast_img,output,"thresholding").thresholding()
 # intensityTF(kidney_img,output,"slicing").slicing()
 # intensityTF(dollor_img,output,"dollor").bitplane()
 # forwardaffineTF(T_img, output, "T").TF("rotation",2,30)
 # inverseAffine(Aerial_img,output,"Aerial","nearest").affine("rotation",2,2,30)
-# inverseAffine(T_img,output,"T","bicubic").affine("rotation",2,1.5,30)
-# inverseAffine(T_img,output,"T","bilinear").affine("rotation",2,1.5,30)
-# # inverseAffine(T_img,output,"T","nearest").affine("rotation",2,1.5,30)
+inverseAffine(T_img,output,"T","bicubic").affine("rotation",2,1.5,30)
+inverseAffine(T_img,output,"T","bilinear").affine("rotation",2,1.5,30)
+inverseAffine(T_img,output,"T","nearest").affine("rotation",2,1.5,30)
+inverseAffine(T_img,output,"T","bicubic").affine("zoom",2,1.5,30)
+inverseAffine(T_img,output,"T","bilinear").affine("zoom",2,1.5,30)
+inverseAffine(T_img,output,"T","nearest").affine("zoom",2,1.5,30)
+inverseAffine(T_img,output,"T","bicubic").affine("shear",1.2,1.5,30)
+inverseAffine(T_img,output,"T","bilinear").affine("shear",1.2,1.5,30)
+inverseAffine(T_img,output,"T","nearest").affine("shear",1.2,1.5,30)
+inverseAffine(T_img,output,"T","nearest").affine("trans",100,300,30)
+
 # inverseAffine(watch_img,output,"watch","bicubic").affine("zoom",1.2,1.2,30)
 # inverseAffine(watch_img,output,"watch","bilinear").affine("zoom",1.2,1.2,30)
 # inverseAffine(watch_img,output,"watch","nearest").affine("zoom",1.2,1.2,30)
@@ -60,10 +68,10 @@ color_img = cv2.imread(folder+color,cv2.IMREAD_COLOR)
 # print(type(img[0][0]))
 # print(type(neg_img[0][0]))
 '''color transform'''
-x = color_img[:,:,0]
+# x = color_img[:,:,0]
 y = colorTF(color_img,"RGB2HSI",output).TF()
 z = colorTF(y,"HSI2RGB",output).TF()
-cv2.imshow('original_image',color_img)
+# cv2.imshow('original_image',color_img)
 
 # cv2.imshow('negativeimg',neg_img)
 if cv2.waitKey(0) == ord('q'):
