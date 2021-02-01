@@ -3,44 +3,53 @@ import os
 import numpy as np
 import math
 import sys, time
-
+from spatial import smoothing,sharpening
 os.chdir("DIP_week2")
 folder="picture/"
-output="output/"
 
-class convolution:
-    def __init__(self,img,kernel,padding):
-        self.img = img
-        self.mask = kernel
-        self.padding = padding
-        self.height = img.shape[0]
-        self.width = img.shape[1]
+pi = math.pi
 
-    def convolv(self):
-        padded_img = np.zeros((self.height+2,self.width+2))
-        if self.padding == "zero":
-            pass
-        elif self.padding == "mirror":
-            padded_img[1:-1,0] = self.img[:,0]
-            padded_img[1:-1,-2] = self.img[:,-2]
-            padded_img[0,1:-1] = self.img[:,0]
-            padded_img[-2,1:-1] = self.img[:,0]
-            padded_img[0,0] = self.img[0,0]
-            padded_img[0,-2] = self.img[0,-2]
-            padded_img[-2,0] = self.img[-2,0]
-            padded_img[-2,-2] = self.img[-2,-2]
 
-        padded_img[1:-1,1:-1] = self.img
-        output = np.zeros((self.height,self.width))
-        kernel = np.flipud(np.fliplr(self.mask))
+folder = "picture/"
 
-        for y in range(self.height):
-            for x in range(self.width):
-                output[y,x]= (kernel * padded_img[y:y+3,x:x+3]).sum()
-        
-        return output
+'''B smoothing'''
+letter_a = "Fig0333(a)(test_pattern_blurring_orig).tif"
+letter_a_img = cv2.imread(folder+letter_a,cv2.IMREAD_GRAYSCALE)
+# smoothing(letter_a_img,"box",3,"zero","letter_a").filter(0)
+# smoothing(letter_a_img,"box",13,"zero","letter_a").filter(0)
+# smoothing(letter_a_img,"box",25,"zero","letter_a").filter(0)
+# smoothing(letter_a_img,"box",3,"mirror","letter_a").filter(0)
+# smoothing(letter_a_img,"box",13,"mirror","letter_a").filter(0)
+# smoothing(letter_a_img,"box",25,"mirror","letter_a").filter(0)
+# smoothing(letter_a_img,"box",3,"replication","letter_a").filter(0)
+# smoothing(letter_a_img,"box",13,"replication","letter_a").filter(0)
+# smoothing(letter_a_img,"box",25,"replication","letter_a").filter(0)
 
-class smooth(convolution):
+# smoothing(letter_a_img,"gaussian",7,"zero","letter_a").filter(1)
+# smoothing(letter_a_img,"gaussian",21,"zero","letter_a").filter(3.5)
+# smoothing(letter_a_img,"gaussian",43,"zero","letter_a").filter(7)
+# smoothing(letter_a_img,"gaussian",7,"mirror","letter_a").filter(1)
+# smoothing(letter_a_img,"gaussian",21,"mirror","letter_a").filter(3.5)
+# smoothing(letter_a_img,"gaussian",43,"mirror","letter_a").filter(7)
+# smoothing(letter_a_img,"gaussian",7,"replication","letter_a").filter(1)
+# smoothing(letter_a_img,"gaussian",21,"replication","letter_a").filter(3.5)
+# smoothing(letter_a_img,"gaussian",43,"replication","letter_a").filter(7)
+
+'''################################################################'''
+
+'''C sharpening'''
+moon = "Fig0338(a)(blurry_moon).tif"
+moon_img = cv2.imread(folder+moon,cv2.IMREAD_GRAYSCALE)
+dip_xe = "Fig0340(a)(dipxe_text).tif"
+dip_xe_img = cv2.imread(folder+dip_xe,cv2.IMREAD_GRAYSCALE)
+# sharpening(moon_img,"laplacian",3,"zero","moon").laplacian()
+sharpening(dip_xe_img,"unsharp",5,"mirror","dip_xe").unsharp(1)
+'''################################################################'''
+
+
+
+
+
 
 
 

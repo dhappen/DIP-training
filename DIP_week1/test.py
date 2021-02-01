@@ -27,9 +27,8 @@ import os
 # cv2.imshow("x",mask)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
-
-mask = np.arange([5,10,3])
-mask2= np.array([1,3,5])
-print(mask.shape,mask2.shape)
-print(mask*mask2)
-print(mask)
+a = 2
+mask = np.linspace(-a,a,2*a+1).reshape(5,1)
+mask2 = np.ones((5,5))
+mask3 = mask * mask2
+print(mask3)
