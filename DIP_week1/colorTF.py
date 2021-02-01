@@ -9,6 +9,8 @@ class colorTF:
         self.img = img
         self.type = type
         self.output = output
+        self.height = img.shape[0]
+        self.width = img.shape[1]
     def TF(self):
         
         def RGB2HSI():
@@ -38,14 +40,28 @@ class colorTF:
             theta = np.arccos(temp)
             smallBmask = (B <= G).astype(np.float64)
             bigBmask = (B > G).astype(np.float64)
-            S = S.reshape((366,409,1))
-            I = I.reshape((366,409,1))
+            S = S.reshape((self.height,self.width,1))
+            I = I.reshape((self.height,self.width,1))
             H1 = theta * smallBmask
             H2_temp = 2 * pi * bigBmask
             H2 = H2_temp.astype(np.float64) - theta * bigBmask
-            H = ((H1 + H2)/(2*pi)).reshape((366,409,1))
+            H = ((H1 + H2)/(2*pi)).reshape((self.height,self.width,1))
 
             return np.concatenate([H,S,I],axis=2)
+        def changeHSI(h,s,i):
+            img = self.img
+            H = (img[:,:,0]).astype(np.float64)
+            S = (img[:,:,1]).astype(np.float64)
+            I = (img[:,:,2]).astype(np.float64)
+
+            H = H*h
+            S = S*s
+            I = I*i
+            S = S.reshape((self.height,self.width,1))
+            I = I.reshape((self.height,self.width,1))
+            H = H.reshape((self.height,self.width,1))
+            return np.concatenate([H,S,I],axis=2)
+            
         def HSI2RGB():
             img = self.img
             H = (img[:,:,0]).astype(np.float64)
@@ -83,9 +99,9 @@ class colorTF:
             B = B1 + B2 + B3
             G = G1 + G2 + G3
             R = R1 + R2 + R3
-            B = (255 * B).reshape((366,409,1))
-            G = (255 * G).reshape((366,409,1))
-            R = (255 * R).reshape((366,409,1))
+            B = (255 * B).reshape((self.height,self.width,1))
+            G = (255 * G).reshape((self.height,self.width,1))
+            R = (255 * R).reshape((self.height,self.width,1))
             fin = np.concatenate([B,G,R],axis=2)
         
             return fin.astype(np.uint8)
@@ -110,5 +126,14 @@ class colorTF:
             cv2.imwrite(self.output + "[{0}color_[B].tif".format(self.type),newimg[:,:,0])
             cv2.imwrite(self.output + "[{0}color_[G].tif".format(self.type),newimg[:,:,1])
             cv2.imwrite(self.output + "[{0}color_[R].tif".format(self.type),newimg[:,:,2])
-        
+        elif self.type == "changeHSI":
+            newimg = changeHSI(1,1,0.5)
+            cv2.imshow(self.output + "c[{0}color]".format(self.type),newimg)
+            cv2.imshow(self.output + "c[{0}color_[H]".format(self.type),newimg[:,:,0])
+            cv2.imshow(self.output + "c[{0}color_[S]".format(self.type),newimg[:,:,1])
+            cv2.imshow(self.output + "c[{0}color_[I]".format(self.type),newimg[:,:,2])            
+            cv2.imwrite(self.output + "c[{0}]color.tif".format(self.type),newimg)
+            cv2.imwrite(self.output + "c[{0}color_[H].tif".format(self.type),newimg[:,:,0])
+            cv2.imwrite(self.output + "c[{0}color_[S].tif".format(self.type),newimg[:,:,1])
+            cv2.imwrite(self.output + "c[{0}color_[I].tif".format(self.type),newimg[:,:,2])
         return newimg

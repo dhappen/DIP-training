@@ -37,17 +37,14 @@ class intensityTF:
     def gammatransform(self, r):
         c = 1
         imgtf = []
-        for y in range(self.height):
-            for x in range(self.width):
-                k = self.img[y,x]
-                s = c * 255 * ((k/255) ** r)
-                imgtf.append(s)
-        imgtf = np.array(imgtf)
-        print(imgtf)
-        imgtf = imgtf.reshape(self.height,self.width)
+        img = self.img
+        img = (img / 255).astype(np.float64)
+        imgtf = c * (img ** r)
+        imgtf = 255 *((imgtf - np.min(imgtf))/(np.max(imgtf)-np.min(imgtf)) + np.min(imgtf))
+        
         imgtf = imgtf.astype(np.uint8)
-        cv2.imshow('gammatransform',imgtf)
-        cv2.imshow('gammatransform_original',self.img)
+        cv2.imshow('[{0}]IntensityTF_gammatransform[{1}].tif'.format(self.imgname,r),imgtf)
+        cv2.imshow('[{0}]IntensityTF_gammatransform_original.tif'.format(self.imgname),self.img)
         cv2.imwrite(self.output+'[{0}]IntensityTF_gammatransform[{1}].tif'.format(self.imgname,r),imgtf)
         cv2.imwrite(self.output+'[{0}]IntensityTF_gammatransform_original.tif'.format(self.imgname),self.img)
         print("gammatransform complete")
